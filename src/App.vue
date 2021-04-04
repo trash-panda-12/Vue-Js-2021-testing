@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header />
-    <Tasks :tasks="tasks" />
+    <Tasks :tasks="tasks" @delete-task="deleteTask" @toggle-reminder="toggleReminder"/>
   </div>
 </template>
 
@@ -22,6 +22,18 @@ export default {
     }
   },
 
+  methods: {
+    deleteTask(id) {
+      if (confirm('Are you sure?')) {
+        // We want everything back EXCEPT the ID of the task that emitted the signal
+        this.tasks = this.tasks.filter((task) => task.id !== id )
+      }
+    },
+    toggleReminder(id){
+      console.log(id)
+    }
+  },
+
   created() {
     this.tasks = [
       {
@@ -34,7 +46,7 @@ export default {
         id: 2,
         text: 'Parents Apppointment',
         day: 'March 22st 2021',
-        reminder: true,
+        reminder: false,
       },
       {
         id: 3,
