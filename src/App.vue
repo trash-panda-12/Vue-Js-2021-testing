@@ -1,6 +1,15 @@
 <template>
   <div class="container">
     <Header />
+
+
+
+    <!-- v-if means show if the variable showAddTask is true -->
+    <div v-if="showAddTask">
+      <!-- @add-task is a response to an emit from the AddTask component. When it gets emitted, do the addTask function in the method list  -->
+      <AddTask @add-task = "addTask" />
+    </div>
+
     <Tasks :tasks="tasks" @delete-task="deleteTask" @toggle-reminder="toggleReminder"/>
   </div>
 </template>
@@ -8,21 +17,30 @@
 <script>
 import Header from './components/Header.vue'
 import Tasks from './components/Tasks'
+import AddTask from './components/AddTask'
 
 export default {
   name: 'App',
   components: {
     Header,
     Tasks,
+    AddTask
   },
 
   data() {
     return {
       tasks: [],
+      showAddTask: false,
     }
   },
 
   methods: {
+    // Add the task from the event emitter to the current array of tasks ([...this.tasks])
+    addTask(task) {
+      this.tasks = [...this.tasks, task]
+    },
+
+
     deleteTask(id) {
       if (confirm('Are you sure?')) {
         // We want everything back EXCEPT the ID of the task that emitted the signal
@@ -30,6 +48,7 @@ export default {
       }
     },
     toggleReminder(id){
+      // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
       this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
     }
   },
