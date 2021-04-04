@@ -1,8 +1,10 @@
 <template>
   <div class="container">
-    <Header @toggle-add-task="toggleAddTask()" />
 
-
+    <Header
+      @toggle-add-task="toggleAddTask()"
+      :showAddTask="showAddTask"
+    />
 
     <!-- v-if means show if the variable showAddTask is true -->
     <div v-if="showAddTask">
@@ -51,6 +53,8 @@ export default {
       // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
       this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
     },
+
+
     toggleAddTask() {
       this.showAddTask = !(this.showAddTask)
     }
