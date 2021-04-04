@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Header />
+    <Header @toggle-add-task="toggleAddTask()" />
 
 
 
@@ -50,6 +50,9 @@ export default {
     toggleReminder(id){
       // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
       this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
+    },
+    toggleAddTask() {
+      this.showAddTask = !(this.showAddTask)
     }
   },
 
