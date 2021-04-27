@@ -60,16 +60,40 @@
       },
 
 
-      deleteTask(id) {
+      async deleteTask(id) {
         if (confirm('Are you sure?')) {
           // We want everything back EXCEPT the ID of the task that emitted the signal
-          this.tasks = this.tasks.filter((task) => task.id !== id )
+          // this.tasks = this.tasks.filter((task) => task.id !== id )
+
+          const res = await fetch(`api/tasks/${id}`, {
+            method: 'DELETE',
+            headers: {
+
+            }
+          })
+
+          res.status === 200 ? (this.tasks = this.tasks.filter((task) => task.id !== id)) : alert("Error Deleting Task")
         }
       },
 
-      toggleReminder(id){
+      async toggleReminder(id){
+        const taskToToggle = await this.fetchTask(id);
+        const updTask = {...taskToToggle, reminder: !taskToToggle.reminder}
+        const res = await fetch(`api/tasks/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-type' : 'application/json'
+          },
+          body: JSON.stringify(updTask)
+        })
+
+        const data = await res.json()
+
         // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
-        this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
+        this.tasks = this.tasks.map( (task) =>
+          task.id === id ? { ...task, reminder: data.reminder } : task
+        )
+
       },
 
       async fetchTasks() {
@@ -83,6 +107,7 @@
         const data = await res.json()
         return data
       }
+
     },
 
     async created() {
