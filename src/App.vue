@@ -17,72 +17,78 @@
 </template>
 
 <script>
-import Header from './components/Header.vue'
-import Tasks from './components/Tasks'
-import AddTask from './components/AddTask'
+  import Header from './components/Header.vue'
+  import Tasks from './components/Tasks'
+  import AddTask from './components/AddTask'
 
-export default {
-  name: 'App',
-  components: {
-    Header,
-    Tasks,
-    AddTask
-  },
-
-  data() {
-    return {
-      tasks: [],
-      showAddTask: false,
-    }
-  },
-
-  methods: {
-    // Add the task from the event emitter to the current array of tasks ([...this.tasks])
-    addTask(task) {
-      this.tasks = [...this.tasks, task]
+  export default {
+    name: 'App',
+    components: {
+      Header,
+      Tasks,
+      AddTask
     },
 
-
-    deleteTask(id) {
-      if (confirm('Are you sure?')) {
-        // We want everything back EXCEPT the ID of the task that emitted the signal
-        this.tasks = this.tasks.filter((task) => task.id !== id )
+    data() {
+      return {
+        tasks: [],
+        showAddTask: false,
       }
     },
-    toggleReminder(id){
-      // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
-      this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
+
+    methods: {
+
+      toggleAddTask() {
+        this.showAddTask = !(this.showAddTask)
+      },
+
+
+
+      // Add the task from the event emitter to the current array of tasks ([...this.tasks])
+      async addTask(task) {
+        const res = await fetch("api/tasks", {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/JSON',
+          },
+          body: JSON.stringify(task)
+        })
+
+        const data = await res.json();
+
+        this.tasks = [...this.tasks, data]
+      },
+
+
+      deleteTask(id) {
+        if (confirm('Are you sure?')) {
+          // We want everything back EXCEPT the ID of the task that emitted the signal
+          this.tasks = this.tasks.filter((task) => task.id !== id )
+        }
+      },
+
+      toggleReminder(id){
+        // We Map every single one in the array, but only change the one tat matches the specific ID of the components that triggered it
+        this.tasks = this.tasks.map((task) => task.id === id ? {...task, reminder: !task.reminder} : task )
+      },
+
+      async fetchTasks() {
+        const res = await fetch("api/tasks")
+        const data = await res.json()
+        return data
+      },
+
+      async fetchTask(id) {
+        const res = await fetch(`api/tasks/${id}`)
+        const data = await res.json()
+        return data
+      }
     },
 
-
-    toggleAddTask() {
-      this.showAddTask = !(this.showAddTask)
-    }
-  },
-
-  created() {
-    this.tasks = [
-      {
-        id: 1,
-        text: 'Doctors Apppointment',
-        day: 'March 1st 2021',
-        reminder: true,
-      },
-      {
-        id: 2,
-        text: 'Parents Apppointment',
-        day: 'March 22st 2021',
-        reminder: false,
-      },
-      {
-        id: 3,
-        text: 'Dentist',
-        day: 'March 33st 2021',
-        reminder: true,
-      },
-    ]
-  },
-}
+    async created() {
+      this.tasks = await this.fetchTasks()
+    },
+  }
 </script>
 
 <style>

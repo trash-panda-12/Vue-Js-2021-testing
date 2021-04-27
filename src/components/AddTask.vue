@@ -33,7 +33,7 @@
         }
 
         const newTask = {
-          id: Math.floor(Math.random() * 100000),
+          // id: Math.floor(Math.random() * 100000),
           // This is making a new task using the current values on our binded data (the v-model attributes)
           text: this.text,
           day: this.day,
